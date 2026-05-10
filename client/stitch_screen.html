@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GoaSports - Discover Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f4fbf4",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb8",
+                        "primary-fixed-dim": "#4edea3",
+                        "outline-variant": "#bbcabf",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#00422b",
+                        "surface-container-low": "#eef6ee",
+                        "secondary-container": "#99efe5",
+                        "primary-container": "#10b981",
+                        "error-container": "#ffdad6",
+                        "on-background": "#161d19",
+                        "on-surface": "#161d19",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#e8f0e9",
+                        "secondary-fixed-dim": "#80d5cb",
+                        "outline": "#6c7a71",
+                        "on-surface-variant": "#3c4a42",
+                        "on-secondary-fixed-variant": "#00504a",
+                        "tertiary-container": "#e29100",
+                        "surface-dim": "#d4dcd5",
+                        "tertiary": "#855300",
+                        "on-secondary-container": "#006f67",
+                        "on-secondary-fixed": "#00201d",
+                        "surface-tint": "#006c49",
+                        "primary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#523200",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-container-highest": "#dde4dd",
+                        "secondary-fixed": "#9cf2e8",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-tertiary-fixed": "#2a1700",
+                        "inverse-surface": "#2b322d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e3eae3",
+                        "on-primary-fixed-variant": "#005236",
+                        "surface": "#f4fbf4",
+                        "secondary": "#006a63",
+                        "primary": "#006c49",
+                        "inverse-primary": "#4edea3",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#dde4dd",
+                        "surface-bright": "#f4fbf4",
+                        "on-primary-fixed": "#002113",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#ebf3eb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "xl": "40px",
+                        "xxl": "64px",
+                        "gutter": "24px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "margin-desktop": "48px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "container-max": "1280px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "headline-lg-mobile": ["Outfit"],
+                        "headline-lg": ["Outfit"],
+                        "display-lg-mobile": ["Outfit"],
+                        "body-lg": ["Outfit"],
+                        "display-lg": ["Outfit"],
+                        "title-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "display-lg-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background relative min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-background/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-sm max-w-container-max mx-auto h-[72px]">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border-2 border-surface-container-lowest">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7cMLI1xr5irwAOmVQfGscUUtSEK9k0F6T8lM-hPVmZYv7CFPglt64jYcueezJBWa3KsFmQ92lwKSlH5tVa2Sxblj_NDxrNV7KibkZxK8yC6ADFmH_L0sMXSNgBJDf2U-Ly2naT4z3OFaozfzLO_OZq4R7UUwlZ8iznI0X2ShjOyzC6PiQ9_fgMh40wXcHLpifK0LkI3QEc-Cm-gG9gyP6tEMMNWqXgLfub-i5bhd055J5TkL0MJ8-oAeeBRhlMtkVpj0g7e4VAvU"/>
+</div>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary tracking-tight">GoaSports</h1>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas (Map Area) -->
+<main class="relative w-full h-screen pt-[72px] pb-[80px]">
+<!-- Map Background (Simulated) -->
+<div class="absolute inset-0 z-0 bg-surface-variant overflow-hidden">
+<img alt="Map Background" class="w-full h-full object-cover opacity-80 mix-blend-multiply filter contrast-125 brightness-110" data-alt="A highly detailed aerial view map of a tropical coastal region, featuring vibrant greens, sandy beige shorelines, and deep teal ocean waters. The map is stylized with a bright, sun-washed light-mode aesthetic, creating a clean and airy feeling typical of modern travel and outdoor activity apps. Soft, diffused lighting enhances the organic curves of the coastline and roads." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgnRUEk0bIlMKtohrwNluyQGqw3yClXTjoRxUzQxH9Www3FMKLeC48_qJmBsoesIC-5mOXzCoFd0ckBc3CDEu3KUdEDE9WHsK1hvi9jjT4BlciAD1zUWSrhLQAr2_4ly5-qDYKxkOv0HRNgWkQCcB29hh4V3IuKpoF3RdOpHL-WTrQFiI5MB6Uyr0ujiBxUXobVlTdUDicv86lttyLbnW1FvX6dCBFDPzpwMRQ1b2jyG2nuWdZgRU8okZyGiTbpV4jnT4NMcDVxAw"/>
+</div>
+<!-- Floating Search & Filter Bar -->
+<div class="absolute top-[96px] left-margin-mobile right-margin-mobile md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-10">
+<div class="bg-surface-container-lowest rounded-full shadow-lg p-xs flex items-center gap-xs">
+<div class="flex-1 flex items-center gap-sm px-md py-sm bg-surface rounded-full border border-transparent focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 p-0 font-body-md text-body-md text-on-surface placeholder:text-outline h-8 outline-none" placeholder="Find turf, court, or sport..." type="text"/>
+</div>
+<button class="bg-surface-container-low text-primary rounded-full px-lg py-sm font-label-sm text-label-sm flex items-center gap-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="tune">tune</span>
+                    Filters
+                </button>
+</div>
+<!-- Quick Filters (Chips) -->
+<div class="flex gap-sm mt-md overflow-x-auto pb-sm scrollbar-hide px-xs">
+<button class="flex-shrink-0 bg-tertiary-fixed text-on-tertiary-fixed px-lg py-xs rounded-full font-label-sm text-label-sm shadow-sm whitespace-nowrap">
+                    All Sports
+                </button>
+<button class="flex-shrink-0 bg-surface-container-lowest text-on-surface-variant px-lg py-xs rounded-full font-label-sm text-label-sm shadow-sm whitespace-nowrap hover:bg-surface-container-low transition-colors">
+                    Football
+                </button>
+<button class="flex-shrink-0 bg-surface-container-lowest text-on-surface-variant px-lg py-xs rounded-full font-label-sm text-label-sm shadow-sm whitespace-nowrap hover:bg-surface-container-low transition-colors">
+                    Cricket
+                </button>
+<button class="flex-shrink-0 bg-surface-container-lowest text-on-surface-variant px-lg py-xs rounded-full font-label-sm text-label-sm shadow-sm whitespace-nowrap hover:bg-surface-container-low transition-colors">
+                    Tennis
+                </button>
+</div>
+</div>
+<!-- Map Markers (Simulated) -->
+<div class="absolute inset-0 z-10 pointer-events-none">
+<!-- Marker 1: Football (Selected) -->
+<button class="pointer-events-auto absolute top-[35%] left-[45%] -translate-x-1/2 -translate-y-1/2 group">
+<div class="bg-primary text-on-primary p-sm rounded-full shadow-lg border-2 border-surface-container-lowest transform scale-125 transition-transform">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+</div>
+<!-- Pulse effect for selected -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/20 rounded-full animate-ping -z-10"></div>
+</button>
+<!-- Marker 2: Cricket -->
+<button class="pointer-events-auto absolute top-[55%] left-[65%] -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform">
+<div class="bg-surface-container-lowest text-primary p-sm rounded-full shadow-md border-2 border-transparent">
+<span class="material-symbols-outlined" data-icon="sports_cricket">sports_cricket</span>
+</div>
+</button>
+<!-- Marker 3: Tennis -->
+<button class="pointer-events-auto absolute top-[25%] left-[75%] -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform">
+<div class="bg-surface-container-lowest text-primary p-sm rounded-full shadow-md border-2 border-transparent">
+<span class="material-symbols-outlined" data-icon="sports_tennis">sports_tennis</span>
+</div>
+</button>
+</div>
+<!-- Sliding Bottom Card (Selected Turf Info) -->
+<div class="absolute bottom-[96px] left-margin-mobile right-margin-mobile md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl z-20">
+<div class="bg-surface-container-lowest rounded-[24px] shadow-[0_12px_32px_rgba(0,108,73,0.08)] overflow-hidden border border-surface-container-lowest transition-transform transform translate-y-0">
+<!-- Card Header/Image -->
+<div class="h-32 relative bg-surface-variant overflow-hidden rounded-t-[24px]">
+<img alt="Miramar Coastal Courts" class="w-full h-full object-cover" data-alt="A high-quality photo of an outdoor coastal football turf next to a sandy beach. The artificial green grass is vibrant under bright, sunny daylight. The scene is airy and optimistic, reflecting a premium tropical sports club environment with deep teal ocean waters visible in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqYl4WFuY4otQZvAl2Al1jVKe_uBXHmVYlX5k0FlEymNXsSlcPXs6zlcbxUHMZQoiKYUAxVKhFIB6tzJArcbyPxoegG9v0AiZA-nuW79ZUZabcdR2UjWqVz2JC9kQxeiqjLosw14jGAR7HKiTXsnzVsDGcogpuP6rhVm6DdA59AilVP7RgwpYQTek9GLrt8cXjYycq2G-ynL3mF9k6ZIBYjNqoGKz_H3QMED9pO1lqPSZpiMmWz5FSVonF_m4i0yoSh5hcyV5nBmk"/>
+<!-- Gradient overlay for text legibility if needed, keeping it light -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
+<button class="absolute top-md right-md bg-surface-container-lowest/90 backdrop-blur p-xs rounded-full text-on-surface-variant shadow-sm hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Card Content -->
+<div class="p-lg">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h2 class="font-title-md text-title-md text-on-surface mb-xs">Miramar Coastal Courts</h2>
+<div class="flex items-center gap-xs font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="location_on">location_on</span>
+                                Panjim, Goa • 2.4 km away
+                            </div>
+</div>
+<div class="bg-secondary-container text-on-secondary-container px-sm py-xs rounded-md flex items-center gap-xs font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] data-weight=" data-icon="star" fill""="">star</span>
+                            4.8
+                        </div>
+</div>
+<!-- Active Matches/Amenities -->
+<div class="mt-md flex items-center justify-between border-t border-surface-container-highest pt-md">
+<div class="flex items-center gap-sm">
+<div class="relative flex -space-x-2">
+<img alt="Player 1" class="w-8 h-8 rounded-full border-2 border-surface-container-lowest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCvNvPAfxo_csVM00MD37zNs3UJ-pzdIUWwvVRc5zyzdl-sCUD09zPIuoF7DY8bhzztPSGBUL8UA-VyTRyl43DMd8x1sCciGBasMLwZ9NEt9PKeBT4znTXnOvx571MPUvP-AgncZdHwwQaIT4GCd2OnqdQMz9Z3JJPE9J7iqkZTHducZyVRk2CWxwncqlS4jmw9bf69s29E9mm3FcdIId2RHL1ULlelfPdH45ooKsBE8-ypgR-aLSfxFVr79_5iZTqcG4JutqCiys"/>
+<img alt="Player 2" class="w-8 h-8 rounded-full border-2 border-surface-container-lowest object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjG9JLf10aIZ68OpU2AUObvGA47ugfuelCMHAi505Yj56WfFLWr8U6Qxqy8F-u0wgDEi3k0zHrozOnrqiJ_v705dS9wuYM0zfGha6Czh68oufqruQvdoU4jUdZh4PFOdQNrX9VPJvKElAn8DYNSGs0-SMfq-LwLkfVO-r3dAG1nl65ut-em4R-0aWRMhGIIKE3rBZi1YXdw1B9jM_VnE3kGaAykRWZmXUi8o0f1gEN9dKfoEg4KO8081GvFT0-aDLChWxfiq2g894"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center font-label-sm text-[10px] text-on-surface-variant">+3</div>
+</div>
+<span class="font-body-md text-[14px] text-on-surface-variant">2 Active Matches</span>
+</div>
+<button class="bg-primary text-on-primary px-xl py-sm rounded-full font-label-sm text-label-sm hover:bg-surface-tint transition-colors shadow-md">
+                            Book Now
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-lowest shadow-[0_-4px_12px_rgba(0,108,73,0.05)] md:hidden">
+<div class="flex justify-around items-center px-margin-mobile pb-lg pt-md">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-y-1 duration-200 p-xs rounded-lg">
+<span class="material-symbols-outlined mb-xs" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-[12px]">Dashboard</span>
+</button>
+<!-- Active State -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-lg py-xs hover:bg-surface-container-high transition-all active:translate-y-1 duration-200">
+<span class="material-symbols-outlined mb-xs" data-icon="map">map</span>
+<span class="font-label-sm text-[12px]">Map</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-y-1 duration-200 p-xs rounded-lg">
+<span class="material-symbols-outlined mb-xs" data-icon="payments">payments</span>
+<span class="font-label-sm text-[12px]">Wallet</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-y-1 duration-200 p-xs rounded-lg">
+<span class="material-symbols-outlined mb-xs" data-icon="person">person</span>
+<span class="font-label-sm text-[12px]">Profile</span>
+</button>
+</div>
+</nav>
+<!-- Desktop Sidebar/Nav Integration Hint (Hidden on Mobile) -->
+<div class="hidden md:flex fixed top-[72px] left-0 bottom-0 w-64 bg-surface-container-lowest border-r border-surface-container-highest p-lg flex-col gap-md z-40">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-sm uppercase tracking-widest">Navigation</div>
+<button class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-low p-sm rounded-lg transition-colors w-full text-left">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</button>
+<button class="flex items-center gap-md bg-primary-container text-on-primary-container p-sm rounded-lg transition-colors w-full text-left font-bold">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-body-md text-body-md">Map</span>
+</button>
+<button class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-low p-sm rounded-lg transition-colors w-full text-left">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md text-body-md">Wallet</span>
+</button>
+<button class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-low p-sm rounded-lg transition-colors w-full text-left">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md text-body-md">Profile</span>
+</button>
+</div>
+<!-- Adjust main content margin for desktop sidebar -->
+<style>
+        @media (min-width: 768px) {
+            main {
+                margin-left: 16rem; /* 64 * 4px */
+                width: calc(100% - 16rem);
+            }
+        }
+    </style>
+</body></html>

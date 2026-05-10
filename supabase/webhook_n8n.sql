@@ -1,0 +1,79 @@
+-- ============================================================
+-- N8N WEBHOOK INTEGRATION
+-- This sets up automatic notifications when a booking is cancelled.
+-- ============================================================
+-- 
+-- HOW IT WORKS:
+-- When a user cancels their confirmed booking, Supabase fires a 
+-- Database Webhook that POSTs the next waitlisted user's details
+-- to your n8n workflow endpoint.
+--
+-- SETUP STEPS (in Supabase Dashboard):
+-- 1. Go to Database → Webhooks
+-- 2. Click "Create a new webhook"
+-- 3. Configure:
+--    - Name: "notify_n8n_on_cancellation"
+--    - Table: "bookings"
+--    - Events: UPDATE
+--    - HTTP Method: POST
+--    - URL: https://your-n8n-instance.com/webhook/match-cancelled
+--    - Headers: { "Content-Type": "application/json" }
+--
+-- The webhook payload will automatically include the old and new row data.
+-- Your n8n workflow can then:
+--   1. Check if old_record.status = 'confirmed' AND new_record.status = 'cancelled'
+--   2. Query the bookings table for the next waitlisted user for that match
+--   3. Promote them to 'confirmed' and send them a notification
+--
+-- ============================================================
+
+-- ALTERNATIVE: If you want to use a PostgreSQL function + pg_net extension
+-- to call the webhook directly from SQL (more advanced):
+
+-- Enable the pg_net extension (may need to be enabled in Dashboard → Extensions)
+-- create extension if not exists pg_net;
+
+-- create or replace function public.notify_n8n_on_cancel()
+-- returns trigger as $$
+-- declare
+--   next_waitlisted record;
+-- begin
+--   -- Only fire when status changes from 'confirmed' to 'cancelled'
+--   if old.status = 'confirmed' and new.status = 'cancelled' then
+--     -- Find the next waitlisted user for this match (oldest first)
+--     select b.id as booking_id, b.user_id, p.name, p.email
+--     into next_waitlisted
+--     from public.bookings b
+--     join public.profiles p on p.id = b.user_id
+--     where b.match_id = new.match_id
+--       and b.status = 'waitlisted'
+--     order by b.created_at asc
+--     limit 1;
+--
+--     -- If there's someone on the waitlist, fire the webhook
+--     if next_waitlisted is not null then
+--       perform net.http_post(
+--         url := 'https://your-n8n-instance.com/webhook/match-cancelled',
+--         body := json_build_object(
+--           'event', 'spot_available',
+--           'match_id', new.match_id,
+--           'cancelled_by', new.user_id,
+--           'next_user', json_build_object(
+--             'booking_id', next_waitlisted.booking_id,
+--             'user_id', next_waitlisted.user_id,
+--             'name', next_waitlisted.name,
+--             'email', next_waitlisted.email
+--           )
+--         )::text,
+--         headers := '{"Content-Type": "application/json"}'::jsonb
+--       );
+--     end if;
+--   end if;
+--   return new;
+-- end;
+-- $$ language plpgsql security definer;
+
+-- drop trigger if exists on_booking_cancelled on public.bookings;
+-- create trigger on_booking_cancelled
+--   after update on public.bookings
+--   for each row execute procedure public.notify_n8n_on_cancel();
