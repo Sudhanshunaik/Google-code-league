@@ -1,61 +1,184 @@
-import { useState, useEffect } from 'react';
-import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { supabase } from '../lib/supabase';
-import { Loader2, Search, SlidersHorizontal, MapPin, Calendar, Image as ImageIcon, X, Star, Users } from 'lucide-react';
+import { Loader2, Search, SlidersHorizontal, MapPin, Calendar, Image as ImageIcon, X, Star, Users, Layers, Navigation, CloudRain } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { getMatchWeather } from '../utils/weather';
 
-const containerStyle = {
-  width: '100%',
-  height: '100%'
+// ── Free High-Quality Tile Layers ──────────────────────────────────────
+const TILE_LAYERS = {
+  cartoDark: {
+    name: 'Dark Mode',
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    emoji: '🌙'
+  },
+  cartoVoyager: {
+    name: 'Voyager',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    emoji: '🗺️'
+  },
+  cartoPositron: {
+    name: 'Light',
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    emoji: '☀️'
+  },
+  openStreetMap: {
+    name: 'Street',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    emoji: '🏘️'
+  },
+  esriSatellite: {
+    name: 'Satellite',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+    emoji: '🛰️'
+  },
+  openTopo: {
+    name: 'Terrain',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+    emoji: '⛰️'
+  }
 };
 
-const center = {
-  lat: 15.2993,
-  lng: 74.1240
+// Goa center coordinates
+const GOA_CENTER = [15.2993, 74.1240];
+
+// ── Sport-Specific Colors ─────────────────────────────────────────────
+const SPORT_COLORS = {
+  football: { bg: '#10b981', text: '#fff', icon: '⚽' },
+  futsal:   { bg: '#14b8a6', text: '#fff', icon: '⚽' },
+  cricket:  { bg: '#f59e0b', text: '#fff', icon: '🏏' },
+  tennis:   { bg: '#06b6d4', text: '#fff', icon: '🎾' },
+  basketball: { bg: '#f97316', text: '#fff', icon: '🏀' },
+  volleyball: { bg: '#8b5cf6', text: '#fff', icon: '🏐' },
+  badminton: { bg: '#ec4899', text: '#fff', icon: '🏸' },
+  default:  { bg: '#006c49', text: '#fff', icon: '🏆' }
 };
 
-// "Goan Sunset" Map Theme
-// High contrast, deep navy blues, corals, and oranges.
-const goanSunsetMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-  { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
-  { featureType: "administrative.land_parcel", elementType: "labels.text.fill", stylers: [{ color: "#64779e" }] },
-  { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
-  { featureType: "landscape.man_made", elementType: "geometry.stroke", stylers: [{ color: "#334e87" }] },
-  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#023e58" }] },
-  { featureType: "poi", elementType: "geometry", stylers: [{ color: "#283d6a" }] },
-  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#6f9ba5" }] },
-  { featureType: "poi", elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
-  { featureType: "poi.park", elementType: "geometry.fill", stylers: [{ color: "#023e58" }] },
-  { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#3C7680" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
-  { featureType: "road", elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c6675" }] },
-  { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
-  { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#b0d5ce" }] },
-  { featureType: "road.highway", elementType: "labels.text.stroke", stylers: [{ color: "#023e58" }] },
-  { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
-  { featureType: "transit", elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
-  { featureType: "transit.line", elementType: "geometry.fill", stylers: [{ color: "#283d6a" }] },
-  { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#3a4762" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#4e6d70" }] }
-];
+// ── Custom SVG Marker Factory ─────────────────────────────────────────
+function createSportIcon(sport, isActive = false) {
+  const sportKey = sport?.toLowerCase() || 'default';
+  const config = SPORT_COLORS[sportKey] || SPORT_COLORS.default;
+  const size = isActive ? 48 : 36;
+  const pulse = isActive ? `<circle cx="${size/2}" cy="${size/2}" r="${size/2}" fill="${config.bg}" opacity="0.25"><animate attributeName="r" from="${size/2}" to="${size*0.8}" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" from="0.3" to="0" dur="1.5s" repeatCount="indefinite"/></circle>` : '';
+  
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${size * 1.6}" height="${size * 1.6}" viewBox="0 0 ${size * 1.6} ${size * 1.6}">
+      ${pulse}
+      <defs>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="${config.bg}" flood-opacity="0.4"/>
+        </filter>
+        <linearGradient id="grad_${sportKey}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${config.bg}"/>
+          <stop offset="100%" stop-color="${adjustColor(config.bg, -30)}"/>
+        </linearGradient>
+      </defs>
+      <g transform="translate(${size*0.3}, ${size*0.1})" filter="url(#shadow)">
+        <path d="M${size/2},${size*1.25} C${size/2},${size*1.25} ${size},${size*0.85} ${size},${size/2} C${size},${size*0.22} ${size*0.78},0 ${size/2},0 C${size*0.22},0 0,${size*0.22} 0,${size/2} C0,${size*0.85} ${size/2},${size*1.25} ${size/2},${size*1.25}Z" 
+              fill="url(#grad_${sportKey})" stroke="white" stroke-width="2"/>
+        <circle cx="${size/2}" cy="${size*0.42}" r="${size*0.25}" fill="white" opacity="0.95"/>
+        <text x="${size/2}" y="${size*0.48}" text-anchor="middle" font-size="${size*0.28}" dominant-baseline="middle">${config.icon}</text>
+      </g>
+    </svg>
+  `;
+  
+  return L.divIcon({
+    html: svg,
+    className: 'custom-sport-marker',
+    iconSize: [size * 1.6, size * 1.6],
+    iconAnchor: [size * 0.8, size * 1.35],
+    popupAnchor: [0, -size * 1.1]
+  });
+}
+
+function adjustColor(hex, amount) {
+  let col = hex.replace('#', '');
+  let num = parseInt(col, 16);
+  let r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  let g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+  let b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+  return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+}
+
+// ── Fly-to animation helper ───────────────────────────────────────────
+function FlyToMarker({ position, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    if (position) {
+      map.flyTo(position, zoom || 14, { duration: 1.2, easeLinearity: 0.25 });
+    }
+  }, [position, zoom, map]);
+  return null;
+}
+
+// ── Locate user on map ────────────────────────────────────────────────
+function LocateUser() {
+  const map = useMap();
+  const handleLocate = () => {
+    map.locate({ setView: true, maxZoom: 14, enableHighAccuracy: true });
+  };
+  return (
+    <button 
+      onClick={handleLocate}
+      className="absolute bottom-28 right-4 z-[1000] bg-surface-card/95 backdrop-blur-md p-3 rounded-full shadow-lg border border-border hover:bg-surface-hover transition-all hover:scale-105 active:scale-95"
+      title="My Location"
+    >
+      <Navigation size={18} className="text-goa-ocean" />
+    </button>
+  );
+}
+
 
 export default function TournamentMap() {
   const [matches, setMatches] = useState([]);
   const [dbLoading, setDbLoading] = useState(true);
   const [activeMarkerId, setActiveMarkerId] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [activeTileLayer, setActiveTileLayer] = useState('cartoDark');
+  const [showLayerPicker, setShowLayerPicker] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [flyToPos, setFlyToPos] = useState(null);
+  const [activeMatchWeather, setActiveMatchWeather] = useState(null);
+  const mapRef = useRef(null);
 
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
-  });
+  const handleSearchLocation = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    try {
+      // First check if it matches any of our locations exactly (or partially)
+      const exactMatch = matches.find(m => 
+        m.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.venue?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (exactMatch) {
+        setFlyToPos([exactMatch.latitude, exactMatch.longitude]);
+        setActiveMarkerId(exactMatch.id);
+        return;
+      }
+
+      // Otherwise geocode via Nominatim
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        setFlyToPos([parseFloat(lat), parseFloat(lon)]);
+        setActiveMarkerId(null);
+      }
+    } catch (err) {
+      console.error("Geocoding failed", err);
+    }
+  };
 
   useEffect(() => {
     const fetchVerifiedMatches = async () => {
@@ -76,24 +199,48 @@ export default function TournamentMap() {
   }, []);
 
   const handleActiveMarker = (markerId) => {
-    if (markerId === activeMarkerId) {
-      return;
-    }
+    if (markerId === activeMarkerId) return;
     setActiveMarkerId(markerId);
+    const match = matches.find(m => m.id === markerId);
+    if (match) {
+      setFlyToPos([match.latitude, match.longitude]);
+      
+      // Fetch weather for this match
+      setActiveMatchWeather(null);
+      getMatchWeather(match.latitude, match.longitude, match.match_time)
+        .then(data => setActiveMatchWeather(data));
+    }
   };
 
   const activeMatch = matches.find(m => m.id === activeMarkerId);
 
-  const filters = ['All', 'Football', 'Cricket', 'Tennis', 'Basketball'];
+  const filters = ['All', 'Football', 'Futsal', 'Cricket', 'Tennis', 'Basketball'];
   
-  const filteredMatches = activeFilter === 'All' 
-    ? matches 
-    : matches.filter(m => m.sport?.toLowerCase() === activeFilter.toLowerCase());
+  const filteredMatches = useMemo(() => {
+    let result = matches;
+    if (activeFilter !== 'All') {
+      result = result.filter(m => m.sport?.toLowerCase() === activeFilter.toLowerCase());
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(m => 
+        m.sport?.toLowerCase().includes(q) || 
+        m.location?.toLowerCase().includes(q) ||
+        m.venue?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [matches, activeFilter, searchQuery]);
 
-  if (dbLoading || !isLoaded) {
+  const currentTile = TILE_LAYERS[activeTileLayer];
+
+  if (dbLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-goa-ocean" />
+        <div className="text-center">
+          <Loader2 size={32} className="animate-spin text-goa-ocean mx-auto mb-3" />
+          <p className="text-text-secondary text-sm">Loading map data...</p>
+        </div>
       </div>
     );
   }
@@ -110,29 +257,33 @@ export default function TournamentMap() {
       </div>
 
       <div className="glass rounded-2xl overflow-hidden border border-border shadow-xl h-[600px] relative">
-        {!import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE' ? (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface/80 backdrop-blur-sm p-6 text-center">
-            <h2 className="text-2xl font-bold text-goa-sun mb-2">Google Maps API Key Missing</h2>
-            <p className="text-text-secondary mb-4 max-w-md">
-              Please add your Google Maps API Key to the <code>.env</code> file as <code>VITE_GOOGLE_MAPS_API_KEY</code> and restart the development server to view the map.
-            </p>
-          </div>
-        ) : null}
 
         {/* Floating Search & Filter Bar */}
-        <div className="absolute top-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-10 pointer-events-none">
+        <div className="absolute top-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-[1000] pointer-events-none">
           <div className="bg-surface-card/90 backdrop-blur-md rounded-full shadow-lg p-1.5 flex items-center gap-2 border border-border pointer-events-auto">
-            <div className="flex-1 flex items-center gap-2 px-4 py-2 bg-surface/50 rounded-full border border-transparent focus-within:border-goa-ocean transition-colors">
-              <Search size={18} className="text-text-muted" />
+            <form onSubmit={handleSearchLocation} className="flex-1 flex items-center gap-2 px-4 py-2 bg-surface/50 rounded-full border border-transparent focus-within:border-goa-ocean transition-colors">
+              <button type="submit" className="text-text-muted hover:text-goa-ocean transition-colors border-none bg-transparent cursor-pointer p-0 flex items-center">
+                <Search size={18} />
+              </button>
               <input 
                 type="text" 
-                placeholder="Find turf, court, or sport..." 
+                placeholder="Find location, turf, or sport... (Press Enter)" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent border-none focus:ring-0 p-0 text-text-primary placeholder:text-text-muted h-8 outline-none text-sm"
               />
-            </div>
-            <button className="bg-surface-hover text-goa-ocean rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2 hover:bg-surface-input transition-colors">
-              <SlidersHorizontal size={16} />
-              Filters
+              {searchQuery && (
+                <button type="button" onClick={() => { setSearchQuery(''); setFlyToPos(GOA_CENTER); }} className="text-text-muted hover:text-text-primary transition-colors border-none bg-transparent cursor-pointer p-0 flex items-center">
+                  <X size={14} />
+                </button>
+              )}
+            </form>
+            <button 
+              onClick={() => setShowLayerPicker(!showLayerPicker)}
+              className="bg-surface-hover text-goa-ocean rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2 hover:bg-surface-input transition-colors"
+            >
+              <Layers size={16} />
+              Map Style
             </button>
           </div>
 
@@ -151,38 +302,94 @@ export default function TournamentMap() {
                     : 'bg-surface-card/90 backdrop-blur-md text-text-secondary border-border hover:bg-surface-hover hover:text-text-primary'
                 }`}
               >
-                {filter}
+                {SPORT_COLORS[filter.toLowerCase()]?.icon || '🏆'} {filter}
               </button>
             ))}
           </div>
+
+          {/* Layer Picker Dropdown */}
+          {showLayerPicker && (
+            <div className="mt-2 bg-surface-card/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-border p-3 pointer-events-auto animate-in">
+              <p className="text-xs text-text-muted font-semibold mb-2 uppercase tracking-wider px-1">Map Style</p>
+              <div className="grid grid-cols-3 gap-2">
+                {Object.entries(TILE_LAYERS).map(([key, layer]) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setActiveTileLayer(key);
+                      setShowLayerPicker(false);
+                    }}
+                    className={`flex flex-col items-center gap-1 p-3 rounded-xl text-xs font-medium transition-all ${
+                      activeTileLayer === key 
+                        ? 'bg-goa-ocean/15 text-goa-ocean border border-goa-ocean/40 shadow-sm' 
+                        : 'bg-surface-hover/50 text-text-secondary border border-transparent hover:bg-surface-hover hover:text-text-primary'
+                    }`}
+                  >
+                    <span className="text-lg">{layer.emoji}</span>
+                    <span>{layer.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
+        {/* Match Count Badge */}
+        <div className="absolute top-4 right-4 z-[1000] bg-surface-card/90 backdrop-blur-md rounded-full px-3 py-1.5 shadow-md border border-border">
+          <span className="text-xs font-semibold text-text-primary">{filteredMatches.length}</span>
+          <span className="text-xs text-text-muted ml-1">matches</span>
+        </div>
+
+        {/* Leaflet Map */}
+        <MapContainer
+          center={GOA_CENTER}
           zoom={10}
-          options={{
-            styles: goanSunsetMapStyle,
-            disableDefaultUI: false,
-            zoomControl: true,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
-          }}
-          onClick={() => setActiveMarkerId(null)}
+          style={{ width: '100%', height: '100%' }}
+          zoomControl={false}
+          ref={mapRef}
+          className="leaflet-map-container"
         >
+          <TileLayer
+            key={activeTileLayer}
+            url={currentTile.url}
+            attribution={currentTile.attribution}
+            maxZoom={19}
+          />
+          <ZoomControl position="bottomright" />
+
+          {flyToPos && <FlyToMarker position={flyToPos} zoom={14} />}
+
           {filteredMatches.map((match) => (
-            <MarkerF
+            <Marker
               key={match.id}
-              position={{ lat: match.latitude, lng: match.longitude }}
-              onClick={() => handleActiveMarker(match.id)}
-              animation={activeMarkerId === match.id ? window.google.maps.Animation.BOUNCE : null}
-            />
+              position={[match.latitude, match.longitude]}
+              icon={createSportIcon(match.sport, activeMarkerId === match.id)}
+              eventHandlers={{
+                click: () => handleActiveMarker(match.id),
+              }}
+            >
+              <Popup className="custom-popup" closeButton={false} maxWidth={220}>
+                <div style={{ fontFamily: "'Outfit', sans-serif", padding: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '16px' }}>{SPORT_COLORS[match.sport?.toLowerCase()]?.icon || '🏆'}</span>
+                    <strong style={{ fontSize: '14px', color: '#161d19' }}>{match.sport} Tournament</strong>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#3c4a42', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span>📍</span> {match.location}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#6c7a71', marginTop: '4px' }}>
+                    {match.match_time ? format(new Date(match.match_time), 'EEE, MMM d · h:mm a') : 'Time TBD'}
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
           ))}
-        </GoogleMap>
+
+          <LocateUser />
+        </MapContainer>
 
         {/* Sliding Bottom Card (Selected Turf Info) */}
-        <div className={`absolute bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-20 transition-transform duration-300 ease-in-out ${activeMarkerId ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 pointer-events-none'}`}>
+        <div className={`absolute bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl z-[1001] transition-transform duration-300 ease-in-out ${activeMarkerId ? 'translate-y-0 opacity-100' : 'translate-y-[120%] opacity-0 pointer-events-none'}`}>
           {activeMatch && (
             <div className="bg-surface-card/95 backdrop-blur-xl rounded-[24px] shadow-2xl overflow-hidden border border-border">
               {/* Card Header/Image */}
@@ -190,7 +397,10 @@ export default function TournamentMap() {
                 {activeMatch.flyer_url ? (
                   <img src={activeMatch.flyer_url} alt={activeMatch.sport} className="w-full h-full object-cover" />
                 ) : (
-                  <ImageIcon size={48} className="text-text-muted opacity-50" />
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-4xl">{SPORT_COLORS[activeMatch.sport?.toLowerCase()]?.icon || '🏆'}</span>
+                    <ImageIcon size={24} className="text-text-muted opacity-40" />
+                  </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-card to-transparent/20"></div>
                 
@@ -223,6 +433,17 @@ export default function TournamentMap() {
                   </div>
                 </div>
 
+                {/* Rain Alert Banner */}
+                {activeMatchWeather && activeMatchWeather.isHighRainRisk && (
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-3 flex items-start gap-2 animate-in fade-in slide-in-from-top-2">
+                    <CloudRain size={18} className="text-blue-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="text-blue-400 font-bold text-xs mb-0.5">High Rain Risk ({activeMatchWeather.rainProbability}%)</h3>
+                      <p className="text-[11px] text-text-secondary leading-tight">Rain is expected during this match. Bring rain gear!</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Active Matches/Amenities */}
                 <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
                   <div className="flex items-center gap-3">
@@ -246,6 +467,28 @@ export default function TournamentMap() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Map Legend / Quick Stats */}
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        {Object.entries(SPORT_COLORS).filter(([k]) => k !== 'default').map(([sport, config]) => {
+          const count = matches.filter(m => m.sport?.toLowerCase() === sport).length;
+          if (count === 0) return null;
+          return (
+            <button
+              key={sport}
+              onClick={() => setActiveFilter(sport.charAt(0).toUpperCase() + sport.slice(1))}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-surface-card border border-border hover:border-goa-ocean/40 transition-all hover:shadow-sm"
+            >
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: config.bg }}></span>
+              <span className="capitalize text-text-primary">{sport}</span>
+              <span className="text-text-muted">({count})</span>
+            </button>
+          );
+        })}
+        <div className="ml-auto text-xs text-text-muted flex items-center gap-1">
+          <span>🌍</span> Free maps powered by OpenStreetMap & CARTO
         </div>
       </div>
     </div>

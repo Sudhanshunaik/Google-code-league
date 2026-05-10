@@ -1,7 +1,11 @@
+/**
+ * MatchResolutionModal — Stitch Coastal Pulse Design
+ * 
+ * Score submission dialog for finalizing match results and updating ELO.
+ */
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { calculateElo } from '../utils/eloCalculator';
-import { Loader2, X, Swords } from 'lucide-react';
 
 export default function MatchResolutionModal({ match, teams, onClose, onSuccess }) {
   const [teamAScore, setTeamAScore] = useState('');
@@ -86,30 +90,31 @@ export default function MatchResolutionModal({ match, teams, onClose, onSuccess 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="glass rounded-2xl w-full max-w-md p-6 border border-white/10 shadow-2xl relative overflow-hidden">
-        {/* Glow accent */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-700" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-surface/30 backdrop-blur-sm animate-in">
+      <div className="stitch-card w-full max-w-md p-6 shadow-2xl relative overflow-hidden">
+        {/* Accent bar */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-tertiary-container to-tertiary" />
 
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center bg-surface-container hover:bg-surface-high text-on-surface-variant transition-colors cursor-pointer border-none"
         >
-          <X size={20} />
+          <span className="material-symbols-outlined text-[18px]">close</span>
         </button>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-orange-500/20 rounded-xl">
-            <Swords size={24} className="text-orange-500" />
+          <div className="p-2 bg-tertiary-fixed/30 rounded-2xl">
+            <span className="material-symbols-outlined text-tertiary text-[24px]">swords</span>
           </div>
           <div>
-            <h2 className="font-display text-xl font-bold text-white">Resolve Match</h2>
-            <p className="text-xs text-text-secondary">Enter final scores to update ELO</p>
+            <h2 className="font-display text-xl font-bold text-on-surface">Resolve Match</h2>
+            <p className="text-xs text-on-surface-variant">Enter final scores to update ELO</p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-error-container border border-error/20 rounded-2xl text-error text-sm flex items-center gap-2">
+            <span className="material-symbols-outlined text-[16px]">error</span>
             {error}
           </div>
         )}
@@ -118,32 +123,32 @@ export default function MatchResolutionModal({ match, teams, onClose, onSuccess 
           <div className="flex items-center justify-between gap-4">
             {/* Team A Input */}
             <div className="flex-1 space-y-2">
-              <label className="text-sm font-bold text-goa-ocean flex justify-between">
-                Team A <span className="text-xs font-normal opacity-70">Avg: {Math.round(teams.sumA / teams.teamA.length)}</span>
+              <label className="text-sm font-bold text-primary flex justify-between">
+                Team A <span className="text-xs font-normal text-on-surface-variant">Avg: {Math.round(teams.sumA / teams.teamA.length)}</span>
               </label>
               <input
                 type="number"
                 min="0"
                 value={teamAScore}
                 onChange={(e) => setTeamAScore(e.target.value)}
-                className="w-full bg-surface/50 border border-white/10 rounded-xl px-4 py-3 text-center text-2xl font-bold text-white focus:border-orange-500 focus:outline-none transition-colors"
+                className="w-full bg-surface-container border border-transparent rounded-2xl px-4 py-3 text-center text-2xl font-bold text-on-surface focus:border-primary focus:outline-none transition-colors"
                 placeholder="0"
               />
             </div>
 
-            <div className="text-text-muted font-bold text-xl pt-6">VS</div>
+            <div className="text-on-surface-variant font-bold text-xl pt-6">VS</div>
 
             {/* Team B Input */}
             <div className="flex-1 space-y-2">
-              <label className="text-sm font-bold text-goa-coral flex justify-between">
-                Team B <span className="text-xs font-normal opacity-70">Avg: {Math.round(teams.sumB / teams.teamB.length)}</span>
+              <label className="text-sm font-bold text-secondary flex justify-between">
+                Team B <span className="text-xs font-normal text-on-surface-variant">Avg: {Math.round(teams.sumB / teams.teamB.length)}</span>
               </label>
               <input
                 type="number"
                 min="0"
                 value={teamBScore}
                 onChange={(e) => setTeamBScore(e.target.value)}
-                className="w-full bg-surface/50 border border-white/10 rounded-xl px-4 py-3 text-center text-2xl font-bold text-white focus:border-orange-500 focus:outline-none transition-colors"
+                className="w-full bg-surface-container border border-transparent rounded-2xl px-4 py-3 text-center text-2xl font-bold text-on-surface focus:border-secondary focus:outline-none transition-colors"
                 placeholder="0"
               />
             </div>
@@ -152,9 +157,17 @@ export default function MatchResolutionModal({ match, teams, onClose, onSuccess 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl font-bold text-white bg-orange-600 hover:bg-orange-500 transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,88,12,0.3)] hover:shadow-[0_0_25px_rgba(234,88,12,0.5)]"
+            className="w-full py-3.5 rounded-full font-bold text-on-primary transition-colors flex items-center justify-center gap-2 shadow-lg border-none cursor-pointer text-sm"
+            style={{ background: '#e29100' }}
           >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : 'Finalize Match'}
+            {loading ? (
+              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+                Finalize Match
+              </>
+            )}
           </button>
         </form>
       </div>

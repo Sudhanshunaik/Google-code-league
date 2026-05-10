@@ -1,12 +1,11 @@
 /**
- * Auth Page — Login & Signup
+ * Auth Page — Login & Signup (Coastal Pulse Design)
  * 
  * Provides email/password auth via Supabase.
  * Auto-creates a profile on signup via the database trigger.
  */
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Mail, Lock, UserPlus, LogIn, Loader2 } from 'lucide-react';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -46,42 +45,44 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-dvh flex items-center justify-center px-4">
+    <div className="min-h-dvh flex items-center justify-center px-4 bg-background">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <span className="text-5xl mb-4 block">🏖️</span>
-          <h1 className="font-display text-3xl font-bold gradient-text mb-2">
-            GoaSports
+          <span className="material-symbols-outlined text-6xl text-primary mb-4 block">sports_soccer</span>
+          <h1 className="font-display text-4xl font-bold text-primary mb-2 tracking-tight">
+            ArenaLink
           </h1>
-          <p className="text-text-secondary text-sm">
+          <p className="text-on-surface-variant text-base">
             Find matches. Book spots. Play together.
           </p>
         </div>
 
         {/* Card */}
-        <div className="glass rounded-2xl p-6 sm:p-8">
+        <div className="stitch-card p-6 sm:p-8">
           {/* Toggle */}
-          <div className="flex rounded-xl bg-surface/50 p-1 mb-6">
+          <div className="flex rounded-full bg-surface-container p-1 mb-6">
             <button
               onClick={() => { setIsLogin(true); setError(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all border-none cursor-pointer ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-all border-none cursor-pointer ${
                 isLogin
-                  ? 'bg-goa-ocean/20 text-goa-ocean'
-                  : 'bg-transparent text-text-muted hover:text-text-secondary'
+                  ? 'bg-primary text-on-primary shadow-sm'
+                  : 'bg-transparent text-on-surface-variant hover:text-on-surface'
               }`}
             >
-              <LogIn size={16} /> Login
+              <span className="material-symbols-outlined text-[18px]">login</span>
+              Login
             </button>
             <button
               onClick={() => { setIsLogin(false); setError(null); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all border-none cursor-pointer ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-all border-none cursor-pointer ${
                 !isLogin
-                  ? 'bg-goa-ocean/20 text-goa-ocean'
-                  : 'bg-transparent text-text-muted hover:text-text-secondary'
+                  ? 'bg-primary text-on-primary shadow-sm'
+                  : 'bg-transparent text-on-surface-variant hover:text-on-surface'
               }`}
             >
-              <UserPlus size={16} /> Sign Up
+              <span className="material-symbols-outlined text-[18px]">person_add</span>
+              Sign Up
             </button>
           </div>
 
@@ -89,40 +90,40 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {!isLogin && (
               <div>
-                <label className="block text-xs font-medium text-text-secondary mb-1.5">Full Name</label>
-                <div className="flex items-center gap-2 bg-surface-input rounded-xl px-3 py-2.5 border border-border focus-within:border-goa-ocean transition-colors">
-                  <UserPlus size={16} className="text-text-muted" />
+                <label className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">Full Name</label>
+                <div className="flex items-center gap-2 bg-surface-container rounded-full px-4 py-3 border border-transparent focus-within:border-primary transition-colors">
+                  <span className="material-symbols-outlined text-[18px] text-outline">person</span>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
                     required={!isLogin}
-                    className="bg-transparent border-none outline-none text-text-primary text-sm flex-1 placeholder:text-text-muted"
+                    className="bg-transparent border-none outline-none text-on-surface text-sm flex-1 placeholder:text-outline font-medium"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1.5">Email</label>
-              <div className="flex items-center gap-2 bg-surface-input rounded-xl px-3 py-2.5 border border-border focus-within:border-goa-ocean transition-colors">
-                <Mail size={16} className="text-text-muted" />
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">Email</label>
+              <div className="flex items-center gap-2 bg-surface-container rounded-full px-4 py-3 border border-transparent focus-within:border-primary transition-colors">
+                <span className="material-symbols-outlined text-[18px] text-outline">mail</span>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="bg-transparent border-none outline-none text-text-primary text-sm flex-1 placeholder:text-text-muted"
+                  className="bg-transparent border-none outline-none text-on-surface text-sm flex-1 placeholder:text-outline font-medium"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1.5">Password</label>
-              <div className="flex items-center gap-2 bg-surface-input rounded-xl px-3 py-2.5 border border-border focus-within:border-goa-ocean transition-colors">
-                <Lock size={16} className="text-text-muted" />
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">Password</label>
+              <div className="flex items-center gap-2 bg-surface-container rounded-full px-4 py-3 border border-transparent focus-within:border-primary transition-colors">
+                <span className="material-symbols-outlined text-[18px] text-outline">lock</span>
                 <input
                   type="password"
                   value={password}
@@ -130,19 +131,21 @@ export default function Auth() {
                   placeholder="••••••••"
                   required
                   minLength={6}
-                  className="bg-transparent border-none outline-none text-text-primary text-sm flex-1 placeholder:text-text-muted"
+                  className="bg-transparent border-none outline-none text-on-surface text-sm flex-1 placeholder:text-outline font-medium"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="bg-goa-coral/10 border border-goa-coral/30 rounded-xl px-4 py-2.5 text-goa-coral text-sm">
+              <div className="bg-error-container border border-error/20 rounded-2xl px-4 py-2.5 text-error text-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">error</span>
                 {error}
               </div>
             )}
 
             {message && (
-              <div className="bg-goa-palm/10 border border-goa-palm/30 rounded-xl px-4 py-2.5 text-goa-palm text-sm">
+              <div className="bg-primary-container/20 border border-primary/20 rounded-2xl px-4 py-2.5 text-primary text-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">check_circle</span>
                 {message}
               </div>
             )}
@@ -150,20 +153,26 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary flex items-center justify-center gap-2 mt-2 w-full py-3"
+              className="btn-primary flex items-center justify-center gap-2 mt-2 w-full py-3.5 text-base"
             >
               {loading ? (
-                <Loader2 size={18} className="animate-spin" />
+                <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
               ) : isLogin ? (
-                <><LogIn size={18} /> Login</>
+                <>
+                  <span className="material-symbols-outlined text-[20px]">login</span>
+                  Login
+                </>
               ) : (
-                <><UserPlus size={18} /> Create Account</>
+                <>
+                  <span className="material-symbols-outlined text-[20px]">person_add</span>
+                  Create Account
+                </>
               )}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-text-muted text-xs mt-6">
+        <p className="text-center text-outline text-xs mt-6">
           Built for Goan athletes 🌴 Google Code League Hackathon
         </p>
       </div>

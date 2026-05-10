@@ -1,23 +1,25 @@
 /**
- * App.jsx — Root Component
+ * App.jsx — Root Component (Coastal Pulse Design)
  * 
  * Handles:
  * - Supabase auth state (session listener)
  * - Profile fetching
  * - Route definitions
- * - Layout with Navbar
+ * - Layout with Navbar + BottomNav
  */
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 
 import Navbar from './components/Navbar';
+import BottomNav from './components/BottomNav';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import MatchDetail from './components/MatchDetail';
 import Profile from './components/Profile';
 import TournamentUploader from './components/TournamentUploader';
 import TournamentMap from './components/TournamentMap';
+import Chatbot from './components/Chatbot';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -99,12 +101,12 @@ export default function App() {
     };
   }, [profile]);
 
-  // Show nothing while checking auth
+  // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <div className="text-center">
-          <span className="text-4xl block mb-3">🏖️</span>
+          <span className="material-symbols-outlined text-5xl text-primary animate-pulse block mb-3">sports_soccer</span>
           <div className="skeleton h-4 w-32 mx-auto" />
         </div>
       </div>
@@ -115,11 +117,11 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* Navbar (only shown when logged in) */}
+      {/* Top Navbar (only shown when logged in) */}
       {user && <Navbar user={user} profile={profile} />}
 
-      {/* Main content (offset for fixed navbar) */}
-      <main className={user ? 'pt-16 flex-1' : 'flex-1'}>
+      {/* Main content (offset for fixed navbar + bottom nav) */}
+      <main className={user ? 'pt-[72px] pb-[80px] md:pb-0 flex-1' : 'flex-1'}>
         <Routes>
           {/* Auth */}
           <Route
@@ -130,7 +132,7 @@ export default function App() {
           {/* Dashboard */}
           <Route
             path="/"
-            element={user ? <Dashboard /> : <Navigate to="/auth" replace />}
+            element={user ? <Dashboard profile={profile} /> : <Navigate to="/auth" replace />}
           />
 
           {/* Match Detail */}
@@ -166,18 +168,17 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Footer */}
-      {user && (
-        <footer className="text-center py-4 text-text-muted text-xs border-t border-border">
-          🌴 GoaSports — Built for Google Code League Hackathon 2026
-        </footer>
-      )}
+      {/* Mobile Bottom Navigation */}
+      {user && <BottomNav />}
+
+      {/* Global Chatbot */}
+      {user && <Chatbot user={user} />}
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-4 right-4 z-50 bg-goa-ocean/20 border border-goa-ocean/50 backdrop-blur-md text-goa-ocean px-6 py-3 rounded-2xl shadow-[0_0_20px_rgba(6,182,212,0.3)] animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-24 md:bottom-4 right-4 z-[60] bg-primary-container/90 border border-primary/20 backdrop-blur-md text-on-primary-container px-6 py-3 rounded-2xl shadow-lg animate-in">
           <div className="flex items-center gap-3">
-            <span className="text-xl">🎉</span>
+            <span className="material-symbols-outlined text-xl">celebration</span>
             <span className="font-semibold text-sm">{toastMessage}</span>
           </div>
         </div>

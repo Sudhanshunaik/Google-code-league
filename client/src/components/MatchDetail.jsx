@@ -1,5 +1,5 @@
 /**
- * MatchDetail — Booking, Waitlist & Team Display
+ * MatchDetail — Booking, Waitlist & Team Display (Coastal Pulse Design)
  * 
  * Shows full details for a single match.
  * Users can book a spot, join the waitlist if full, or cancel.
@@ -14,10 +14,6 @@ import { getSportMeta } from '../utils/sportsMeta';
 import { getMatchWeather } from '../utils/weather';
 import { triggerRainAlertWebhook, triggerCancellationWebhook } from '../utils/webhook';
 import { format } from 'date-fns';
-import {
-  ArrowLeft, MapPin, Clock, Users, UserCheck, UserX,
-  Loader2, Zap, Shield, Swords, AlertTriangle, CloudRain, Trophy, Info
-} from 'lucide-react';
 import MatchResolutionModal from './MatchResolutionModal';
 import CancellationModal from './CancellationModal';
 
@@ -225,7 +221,7 @@ export default function MatchDetail({ user, profile }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-goa-ocean" />
+        <span className="material-symbols-outlined text-4xl text-primary animate-pulse">sports_score</span>
       </div>
     );
   }
@@ -233,58 +229,60 @@ export default function MatchDetail({ user, profile }) {
   if (!match) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-        <AlertTriangle size={40} className="mx-auto text-goa-sun mb-3" />
-        <p className="text-text-secondary">Match not found.</p>
-        <Link to="/" className="text-goa-ocean text-sm mt-2 inline-block">← Back to Dashboard</Link>
+        <span className="material-symbols-outlined text-5xl text-tertiary mb-3 block">error</span>
+        <p className="text-on-surface-variant">Match not found.</p>
+        <Link to="/" className="text-primary text-sm mt-2 inline-block no-underline">← Back to Dashboard</Link>
       </div>
     );
   }
 
   const meta = getSportMeta(match.sport);
   const spotsLeft = match.capacity - confirmedBookings.length;
+  const fillPct = Math.min((confirmedBookings.length / match.capacity) * 100, 100);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-4 md:px-6 py-6">
       {/* Back link */}
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-text-secondary hover:text-primary text-sm mb-6 no-underline transition-colors"
+        className="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary text-sm mb-6 no-underline transition-colors"
       >
-        <ArrowLeft size={16} /> Back to Dashboard
+        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        Back to Dashboard
       </Link>
 
       {/* Rain Alert Banner */}
       {weather && weather.isHighRainRisk && (
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 mb-6 flex items-start gap-3">
-          <CloudRain size={24} className="text-blue-400 shrink-0 mt-0.5" />
+        <div className="bg-[#e3f2fd] border border-[#90caf9] rounded-2xl p-4 mb-6 flex items-start gap-3">
+          <span className="material-symbols-outlined text-[#1976d2] shrink-0 mt-0.5 text-[24px]">thunderstorm</span>
           <div>
-            <h3 className="text-blue-400 font-bold mb-1">Weather Watch: {weather.rainProbability}% Chance of Rain</h3>
-            <p className="text-sm text-text-secondary">High chance of rain during this match! Check with the turf manager or carry your rain gear. We'll send an automated alert to all booked players.</p>
+            <h3 className="text-[#1565c0] font-bold mb-1">Weather Watch: {weather.rainProbability}% Chance of Rain</h3>
+            <p className="text-sm text-on-surface-variant">High chance of rain during this match! Check with the turf manager or carry your rain gear. We'll send an automated alert to all booked players.</p>
           </div>
         </div>
       )}
 
       {/* Match Header Card */}
-      <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
+      <div className="stitch-card p-6 sm:p-8 mb-4">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>
             <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold mb-3"
+              className="sport-chip sport-chip--active inline-flex mb-3"
               style={{ background: meta.bg, color: meta.color }}
             >
-              <span className="text-lg">{meta.emoji}</span>
+              <span className="material-symbols-outlined text-[16px]">{meta.icon}</span>
               {match.sport} · {match.format}
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-text-primary mb-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-on-surface mb-2">
               {match.location}
             </h1>
-            <div className="flex flex-col gap-1.5 text-sm text-text-secondary">
+            <div className="flex flex-col gap-1.5 text-sm text-on-surface-variant">
               <div className="flex items-center gap-2">
-                <Clock size={14} className="text-text-muted" />
+                <span className="material-symbols-outlined text-[16px] text-outline">schedule</span>
                 {format(new Date(match.match_time), 'EEEE, MMMM d, yyyy · h:mm a')}
               </div>
               <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-text-muted" />
+                <span className="material-symbols-outlined text-[16px] text-outline">location_on</span>
                 {match.location}, Goa
               </div>
             </div>
@@ -293,27 +291,27 @@ export default function MatchDetail({ user, profile }) {
           {/* Capacity badge and Pot */}
           <div className="flex flex-col items-center sm:items-end gap-3">
             <div className="flex flex-col items-end gap-1 group relative">
-              <div className="bg-surface/50 border border-white/5 rounded-xl px-3 py-1.5 flex items-center gap-2">
-                <span className="text-xs text-text-muted">Total Pot</span>
-                <span className="text-goa-sun font-bold">₹{confirmedBookings.length * (match.price || 200)}</span>
-                <Info size={14} className="text-text-muted cursor-help" />
+              <div className="bg-surface-low border border-outline-variant rounded-2xl px-3 py-1.5 flex items-center gap-2">
+                <span className="text-xs text-on-surface-variant">Total Pot</span>
+                <span className="text-tertiary font-bold">₹{confirmedBookings.length * (match.price || 200)}</span>
+                <span className="material-symbols-outlined text-[14px] text-outline cursor-help">help</span>
               </div>
-              <div className="absolute right-0 top-full mt-2 w-64 bg-surface-hover border border-border p-3 rounded-xl text-xs text-text-secondary opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-xl">
-                <strong className="text-goa-sun block mb-1">Susegad Insurance Active</strong>
+              <div className="absolute right-0 top-full mt-2 w-64 bg-surface-lowest border border-outline-variant p-3 rounded-2xl text-xs text-on-surface-variant opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-xl">
+                <strong className="text-tertiary block mb-1">Susegad Insurance Active</strong>
                 If you cancel late, your deposit penalty is split among the team. Stakes locked!
               </div>
             </div>
 
             <div className="flex flex-col items-end gap-1">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold ${
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold ${
                 isFull
-                  ? 'bg-goa-coral/15 text-goa-coral'
-                  : 'bg-goa-palm/15 text-goa-palm'
+                  ? 'bg-error-container text-error'
+                  : 'bg-primary-container/20 text-primary'
               }`}>
-                <Users size={16} />
+                <span className="material-symbols-outlined text-[18px]">group</span>
                 {confirmedBookings.length}/{match.capacity}
               </div>
-              <span className={`text-xs font-medium ${isFull ? 'text-goa-coral' : 'text-goa-palm'}`}>
+              <span className={`text-xs font-semibold ${isFull ? 'text-error' : 'text-primary'}`}>
                 {isFull ? 'Match Full' : `${spotsLeft} spots remaining`}
               </span>
             </div>
@@ -321,53 +319,57 @@ export default function MatchDetail({ user, profile }) {
         </div>
 
         {/* Capacity bar */}
-        <div className="w-full h-2 rounded-full bg-surface overflow-hidden mb-6">
+        <div className="capacity-bar mb-6" style={{ height: '8px' }}>
           <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{
-              width: `${Math.min((confirmedBookings.length / match.capacity) * 100, 100)}%`,
-              background: isFull
-                ? 'linear-gradient(90deg, #f43f5e, #ef4444)'
-                : 'linear-gradient(90deg, #06b6d4, #10b981)',
-            }}
+            className={`capacity-bar__fill ${isFull ? 'capacity-bar__fill--full' : 'capacity-bar__fill--ok'}`}
+            style={{ width: `${fillPct}%` }}
           />
         </div>
 
         {/* Action Button */}
         {error && (
-          <div className="bg-goa-coral/10 border border-goa-coral/30 rounded-xl px-4 py-2.5 text-goa-coral text-sm mb-4">
+          <div className="bg-error-container border border-error/20 rounded-2xl px-4 py-2.5 text-error text-sm mb-4 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">error</span>
             {error}
           </div>
         )}
 
         {match.status === 'completed' ? (
-          <div className="bg-surface-hover rounded-xl px-4 py-3 text-text-secondary text-sm text-center">
+          <div className="bg-surface-container rounded-2xl px-4 py-3 text-on-surface-variant text-sm text-center">
             This match has ended.
           </div>
         ) : !myBooking ? (
           <button
             onClick={handleBook}
             disabled={actionLoading}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all ${
+            className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-sm transition-all ${
               isFull ? 'btn-secondary' : 'btn-primary'
             }`}
           >
             {actionLoading ? (
-              <Loader2 size={18} className="animate-spin" />
+              <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
             ) : isFull ? (
-              <><UserCheck size={18} /> Join Waitlist (₹{match?.price || 200})</>
+              <>
+                <span className="material-symbols-outlined text-[20px]">person_add</span>
+                Join Waitlist (₹{match?.price || 200})
+              </>
             ) : (
-              <><Zap size={18} /> Book Your Spot (₹{match?.price || 200})</>
+              <>
+                <span className="material-symbols-outlined text-[20px]">bolt</span>
+                Book Your Spot (₹{match?.price || 200})
+              </>
             )}
           </button>
         ) : (
           <div className="flex items-center gap-3">
-            <div className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold ${
+            <div className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold ${
               myBooking.status === 'confirmed'
-                ? 'bg-goa-palm/15 text-goa-palm'
-                : 'bg-goa-sun/15 text-goa-sun'
+                ? 'bg-primary-container/20 text-primary'
+                : 'bg-tertiary-fixed/30 text-tertiary'
             }`}>
-              <UserCheck size={16} />
+              <span className="material-symbols-outlined text-[18px]">
+                {myBooking.status === 'confirmed' ? 'check_circle' : 'schedule'}
+              </span>
               {myBooking.status === 'confirmed' ? 'You\'re Booked!' : 'You\'re on the Waitlist'}
             </div>
             <button
@@ -375,7 +377,11 @@ export default function MatchDetail({ user, profile }) {
               disabled={actionLoading}
               className="btn-danger flex items-center gap-2"
             >
-              {actionLoading ? <Loader2 size={16} className="animate-spin" /> : <UserX size={16} />}
+              {actionLoading ? (
+                <span className="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+              ) : (
+                <span className="material-symbols-outlined text-[16px]">person_remove</span>
+              )}
               Cancel
             </button>
           </div>
@@ -384,41 +390,44 @@ export default function MatchDetail({ user, profile }) {
 
       {/* Teams Display (only when full) */}
       {teams && (
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
-            <h2 className="font-display text-xl font-bold gradient-text flex items-center gap-2">
-              <Swords size={20} /> Auto-Balanced Teams
+            <h2 className="font-display text-xl font-semibold text-on-surface flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-[24px]">swords</span>
+              Auto-Balanced Teams
             </h2>
             {match.status !== 'completed' && (
               <button
                 onClick={() => setShowResolutionModal(true)}
-                className="btn-primary flex items-center gap-2 text-sm bg-orange-600 hover:bg-orange-500 shadow-[0_0_15px_rgba(234,88,12,0.3)] hover:shadow-[0_0_25px_rgba(234,88,12,0.5)] border-none"
+                className="btn-primary flex items-center gap-2 text-sm"
+                style={{ background: '#e29100' }}
               >
-                <Trophy size={16} /> Resolve Match
+                <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+                Resolve Match
               </button>
             )}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Team A */}
-            <div className="glass rounded-2xl p-5">
+            <div className="stitch-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Shield size={18} className="text-goa-ocean" />
-                  <h3 className="font-display font-bold text-goa-ocean">Team A</h3>
+                  <span className="material-symbols-outlined text-primary text-[20px]">shield</span>
+                  <h3 className="font-display font-bold text-primary">Team A</h3>
                 </div>
-                <span className="text-xs font-semibold bg-goa-ocean/15 text-goa-ocean px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
                   Skill: {teams.sumA}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
                 {teams.teamA.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between bg-surface/50 rounded-xl px-3 py-2">
-                    <span className="text-sm text-text-primary font-medium">{p.name}</span>
+                  <div key={p.id} className="flex items-center justify-between bg-surface-low rounded-xl px-3 py-2">
+                    <span className="text-sm text-on-surface font-medium">{p.name}</span>
                     <div className="flex items-center gap-1">
-                      <div className="w-12 h-1.5 rounded-full bg-surface overflow-hidden">
+                      <div className="w-12 h-1.5 rounded-full bg-surface-container overflow-hidden">
                         <div className="h-full rounded-full skill-fill" style={{ width: `${p.skill_rating * 10}%` }} />
                       </div>
-                      <span className="text-xs text-text-muted w-4 text-right">{p.skill_rating}</span>
+                      <span className="text-xs text-on-surface-variant w-4 text-right">{p.skill_rating}</span>
                     </div>
                   </div>
                 ))}
@@ -426,32 +435,32 @@ export default function MatchDetail({ user, profile }) {
             </div>
 
             {/* Team B */}
-            <div className="glass rounded-2xl p-5">
+            <div className="stitch-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Shield size={18} className="text-goa-coral" />
-                  <h3 className="font-display font-bold text-goa-coral">Team B</h3>
+                  <span className="material-symbols-outlined text-secondary text-[20px]">shield</span>
+                  <h3 className="font-display font-bold text-secondary">Team B</h3>
                 </div>
-                <span className="text-xs font-semibold bg-goa-coral/15 text-goa-coral px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold bg-secondary/10 text-secondary px-2.5 py-0.5 rounded-full">
                   Skill: {teams.sumB}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
                 {teams.teamB.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between bg-surface/50 rounded-xl px-3 py-2">
-                    <span className="text-sm text-text-primary font-medium">{p.name}</span>
+                  <div key={p.id} className="flex items-center justify-between bg-surface-low rounded-xl px-3 py-2">
+                    <span className="text-sm text-on-surface font-medium">{p.name}</span>
                     <div className="flex items-center gap-1">
-                      <div className="w-12 h-1.5 rounded-full bg-surface overflow-hidden">
+                      <div className="w-12 h-1.5 rounded-full bg-surface-container overflow-hidden">
                         <div className="h-full rounded-full skill-fill" style={{ width: `${p.skill_rating * 10}%` }} />
                       </div>
-                      <span className="text-xs text-text-muted w-4 text-right">{p.skill_rating}</span>
+                      <span className="text-xs text-on-surface-variant w-4 text-right">{p.skill_rating}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          <p className="text-text-muted text-xs text-center mt-3">
+          <p className="text-on-surface-variant text-xs text-center mt-3">
             Δ Skill Difference: {teams.deltaSkill} point{teams.deltaSkill !== 1 ? 's' : ''}
           </p>
         </div>
@@ -460,28 +469,31 @@ export default function MatchDetail({ user, profile }) {
       {/* Player Lists */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Confirmed Players */}
-        <div className="glass rounded-2xl p-5">
-          <h3 className="font-display font-semibold text-text-primary mb-3 flex items-center gap-2">
-            <UserCheck size={16} className="text-goa-palm" />
+        <div className="stitch-card p-5">
+          <h3 className="font-display font-semibold text-on-surface mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-[18px]">how_to_reg</span>
             Confirmed ({confirmedBookings.length})
           </h3>
           {confirmedBookings.length === 0 ? (
-            <p className="text-text-muted text-sm">No one has booked yet. Be the first!</p>
+            <p className="text-on-surface-variant text-sm">No one has booked yet. Be the first!</p>
           ) : (
             <div className="flex flex-col gap-2">
               {confirmedBookings.map((b, i) => {
                 const p = profiles[b.user_id];
                 return (
-                  <div key={b.id} className="flex items-center gap-2 bg-surface/50 rounded-xl px-3 py-2">
-                    <span className="text-xs text-text-muted w-5">{i + 1}.</span>
-                    <span className="text-sm text-text-primary font-medium flex-1">
+                  <div key={b.id} className="flex items-center gap-2 bg-surface-low rounded-xl px-3 py-2">
+                    <span className="text-xs text-on-surface-variant w-5">{i + 1}.</span>
+                    <span className="text-sm text-on-surface font-medium flex-1">
                       {p?.name || 'Player'}
                       {b.user_id === user?.id && (
-                        <span className="text-goa-ocean text-xs ml-1">(You)</span>
+                        <span className="text-primary text-xs ml-1">(You)</span>
                       )}
                     </span>
                     {p?.skill_rating && (
-                      <span className="text-xs text-text-muted">⭐ {p.skill_rating}</span>
+                      <span className="rating-badge">
+                        <span className="material-symbols-outlined text-[12px]">star</span>
+                        {p.skill_rating}
+                      </span>
                     )}
                   </div>
                 );
@@ -491,24 +503,24 @@ export default function MatchDetail({ user, profile }) {
         </div>
 
         {/* Waitlist */}
-        <div className="glass rounded-2xl p-5">
-          <h3 className="font-display font-semibold text-text-primary mb-3 flex items-center gap-2">
-            <Clock size={16} className="text-goa-sun" />
+        <div className="stitch-card p-5">
+          <h3 className="font-display font-semibold text-on-surface mb-3 flex items-center gap-2">
+            <span className="material-symbols-outlined text-tertiary text-[18px]">schedule</span>
             Waitlist ({waitlistedBookings.length})
           </h3>
           {waitlistedBookings.length === 0 ? (
-            <p className="text-text-muted text-sm">No one on the waitlist.</p>
+            <p className="text-on-surface-variant text-sm">No one on the waitlist.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {waitlistedBookings.map((b, i) => {
                 const p = profiles[b.user_id];
                 return (
-                  <div key={b.id} className="flex items-center gap-2 bg-surface/50 rounded-xl px-3 py-2">
-                    <span className="text-xs text-goa-sun w-5">#{i + 1}</span>
-                    <span className="text-sm text-text-primary font-medium flex-1">
+                  <div key={b.id} className="flex items-center gap-2 bg-surface-low rounded-xl px-3 py-2">
+                    <span className="text-xs text-tertiary w-5">#{i + 1}</span>
+                    <span className="text-sm text-on-surface font-medium flex-1">
                       {p?.name || 'Player'}
                       {b.user_id === user?.id && (
-                        <span className="text-goa-sun text-xs ml-1">(You)</span>
+                        <span className="text-tertiary text-xs ml-1">(You)</span>
                       )}
                     </span>
                   </div>

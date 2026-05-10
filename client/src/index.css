@@ -1,33 +1,87 @@
 /* ============================================================
-   GOAN SPORTS MATCHMAKING PLATFORM — Global Styles
-   High-energy, tropical, vibrant "Goan Sports" aesthetic
-   Built on Tailwind CSS v4 with custom design tokens
+   GOASPORTS MATCHMAKING — Coastal Pulse Design System
+   Light-mode, tropical, premium "Island Sports" aesthetic
+   Ported from Google Stitch → Tailwind CSS v4
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
 
-/* ---------- Custom Theme (Tailwind v4 @theme) ---------- */
+/* ---------- Coastal Pulse Theme (Tailwind v4 @theme) ---------- */
 @theme {
+  /* Typography */
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Outfit', system-ui, sans-serif;
 
-  --color-goa-sun: #fbbf24;
-  --color-goa-ocean: #06b6d4;
-  --color-goa-palm: #10b981;
-  --color-goa-sand: #fef3c7;
-  --color-goa-coral: #f43f5e;
-  --color-goa-sky: #0ea5e9;
+  /* === Coastal Pulse Color Palette === */
+  /* Primary: Island Green */
+  --color-primary: #006c49;
+  --color-primary-container: #10b981;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #00422b;
+  --color-primary-fixed: #6ffbbe;
+  --color-inverse-primary: #4edea3;
 
-  --color-surface: #0f172a;
-  --color-surface-card: #1e293b;
-  --color-surface-hover: #334155;
-  --color-surface-input: #1e293b;
-  --color-border: #334155;
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
+  /* Secondary: Teal Lagoon */
+  --color-secondary: #006a63;
+  --color-secondary-container: #99efe5;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #006f67;
+
+  /* Tertiary: Sun Gold */
+  --color-tertiary: #855300;
+  --color-tertiary-container: #e29100;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-fixed: #ffddb8;
+  --color-tertiary-fixed-dim: #ffb95f;
+
+  /* Error */
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+
+  /* Surface Palette (Light Mode) */
+  --color-background: #f4fbf4;
+  --color-surface: #f4fbf4;
+  --color-surface-dim: #d4dcd5;
+  --color-surface-bright: #f4fbf4;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #eef6ee;
+  --color-surface-container: #e8f0e9;
+  --color-surface-high: #e3eae3;
+  --color-surface-highest: #dde4dd;
+  --color-surface-variant: #dde4dd;
+
+  /* On-surface */
+  --color-on-surface: #161d19;
+  --color-on-surface-variant: #3c4a42;
+
+  /* Outline */
+  --color-outline: #6c7a71;
+  --color-outline-variant: #bbcabf;
+
+  /* Inverse */
+  --color-inverse-surface: #2b322d;
+  --color-inverse-on-surface: #ebf3eb;
+
+  /* Surface Tint */
+  --color-surface-tint: #006c49;
+
+  /* Legacy aliases (keep existing components working) */
+  --color-goa-sun: #ffb95f;
+  --color-goa-ocean: #006c49;
+  --color-goa-palm: #10b981;
+  --color-goa-sand: #ffddb8;
+  --color-goa-coral: #ba1a1a;
+  --color-goa-sky: #006a63;
+
+  --color-surface-card: #ffffff;
+  --color-surface-hover: #e3eae3;
+  --color-surface-input: #e8f0e9;
+  --color-border: #bbcabf;
+  --color-text-primary: #161d19;
+  --color-text-secondary: #3c4a42;
+  --color-text-muted: #6c7a71;
 }
 
 /* ---------- Base ---------- */
@@ -41,24 +95,12 @@ html {
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
+  font-family: 'Outfit', var(--font-sans);
+  background: var(--color-background);
+  color: var(--color-on-surface);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Animated gradient background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(6,182,212,0.15), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(244,63,94,0.1), transparent),
-    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(16,185,129,0.05), transparent);
 }
 
 #root {
@@ -67,76 +109,89 @@ body::before {
   flex-direction: column;
 }
 
-/* ---------- Utility classes ---------- */
-.glass {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(51, 65, 85, 0.5);
+/* ---------- Material Symbols Icon Utility ---------- */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  vertical-align: middle;
 }
 
+/* ---------- Glassmorphism (Light Mode) ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(187, 202, 191, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 108, 73, 0.04);
+}
+
+/* ---------- Gradient Text ---------- */
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-goa-ocean), var(--color-goa-palm));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-warm {
-  background: linear-gradient(135deg, var(--color-goa-sun), var(--color-goa-coral));
+  background: linear-gradient(135deg, var(--color-tertiary-fixed-dim), var(--color-tertiary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Animated shimmer for loading states */
+/* ---------- Shimmer Loading ---------- */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--color-surface-card) 25%, var(--color-surface-hover) 50%, var(--color-surface-card) 75%);
+  background: linear-gradient(90deg, var(--color-surface-container) 25%, var(--color-surface-high) 50%, var(--color-surface-container) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
 
-/* Pulse glow for live badges */
+/* ---------- Pulse Glow (Live Badge) ---------- */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 4px rgba(16,185,129,0.4); }
-  50% { box-shadow: 0 0 16px rgba(16,185,129,0.8); }
+  0%, 100% { box-shadow: 0 0 4px rgba(16, 185, 129, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.6); }
 }
 
 .live-badge {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Smooth card hover */
+/* ---------- Card Hover ---------- */
 .card-hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 108, 73, 0.08);
 }
 
-/* Button base */
+/* ---------- Buttons ---------- */
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-goa-ocean), var(--color-goa-palm));
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   font-weight: 600;
-  padding: 0.625rem 1.5rem;
-  border-radius: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(0, 108, 73, 0.15);
 }
 .btn-primary:hover {
-  opacity: 0.9;
+  background: var(--color-surface-tint);
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(6,182,212,0.35);
+  box-shadow: 0 4px 16px rgba(0, 108, 73, 0.25);
 }
 .btn-primary:disabled {
   opacity: 0.5;
@@ -146,11 +201,12 @@ body::before {
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #ef4444, var(--color-goa-coral));
+  background: var(--color-error);
   color: white;
   font-weight: 600;
-  padding: 0.625rem 1.5rem;
-  border-radius: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -162,28 +218,204 @@ body::before {
 }
 
 .btn-secondary {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
+  background: var(--color-surface-lowest);
+  color: var(--color-on-surface);
   font-weight: 500;
-  padding: 0.625rem 1.5rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-border);
+  font-family: 'Outfit', sans-serif;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-outline-variant);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
 }
 .btn-secondary:hover {
-  background: var(--color-surface-card);
-  border-color: var(--color-goa-ocean);
+  background: var(--color-surface-container);
+  border-color: var(--color-primary);
 }
 
-/* Custom scrollbar */
+/* ---------- Stitch-style Cards ---------- */
+.stitch-card {
+  background: var(--color-surface-lowest);
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-outline-variant);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.stitch-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 108, 73, 0.06);
+  transform: translateY(-2px);
+}
+
+/* ---------- Sport Chip (Pill Filter) ---------- */
+.sport-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+.sport-chip--active {
+  background: var(--color-tertiary-fixed);
+  color: var(--color-on-surface);
+}
+.sport-chip--inactive {
+  background: var(--color-surface-lowest);
+  color: var(--color-on-surface-variant);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.sport-chip--inactive:hover {
+  background: var(--color-surface-low);
+}
+
+/* ---------- Capacity Progress Bar ---------- */
+.capacity-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-surface-container);
+  overflow: hidden;
+}
+.capacity-bar__fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+.capacity-bar__fill--ok {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-container));
+}
+.capacity-bar__fill--full {
+  background: linear-gradient(90deg, var(--color-error), #ef4444);
+}
+
+/* ---------- Rating Badge ---------- */
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ---------- Custom Scrollbar ---------- */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-outline); }
 
-/* Skill rating bar colors */
+/* Hide scrollbar for filter chips */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---------- Skill Fill Bar ---------- */
 .skill-fill {
-  background: linear-gradient(90deg, var(--color-goa-ocean), var(--color-goa-palm));
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-container));
+}
+
+/* ---------- Animate In (for toasts etc.) ---------- */
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-in {
+  animation: slide-in-from-bottom 0.3s ease-out forwards;
+}
+
+/* ---------- Leaflet Map Overrides ---------- */
+.leaflet-map-container {
+  border-radius: 1rem;
+  z-index: 0;
+}
+
+/* Custom sport marker — remove default Leaflet icon styling */
+.custom-sport-marker {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: transform 0.2s ease;
+}
+.custom-sport-marker:hover {
+  transform: scale(1.15);
+  z-index: 10000 !important;
+}
+
+/* Custom Popup Styling */
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px !important;
+  border: 1px solid var(--color-outline-variant) !important;
+  box-shadow: 0 8px 32px rgba(0, 108, 73, 0.12), 0 2px 8px rgba(0,0,0,0.06) !important;
+  padding: 4px !important;
+}
+.leaflet-popup-content {
+  margin: 8px 12px !important;
+  line-height: 1.4 !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid var(--color-outline-variant) !important;
+  border-top: none !important;
+  border-left: none !important;
+  box-shadow: none !important;
+}
+
+/* Zoom Controls */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+.leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+  color: var(--color-on-surface) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--color-outline-variant) !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 16px !important;
+  transition: background 0.2s ease;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-surface-container) !important;
+}
+.leaflet-control-zoom a:last-child {
+  border-bottom: none !important;
+}
+
+/* Attribution */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(4px);
+  font-size: 10px !important;
+  border-radius: 6px 0 0 0 !important;
+  padding: 2px 6px !important;
+  color: var(--color-on-surface-variant) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--color-primary) !important;
+}
+
+/* Marker cluster pulse animation */
+@keyframes marker-pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
 }

@@ -1,18 +1,20 @@
 /**
- * Sport metadata — icons (emoji), colors, and labels
+ * Sport metadata — Material Symbols icons, emojis, colors, and labels
  * Used across the UI for consistent sport theming
  */
 export const SPORTS = {
-  Futsal: { emoji: '⚽', color: '#10b981', bg: 'rgba(16,185,129,0.12)', label: 'Futsal' },
-  Football: { emoji: '🏟️', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', label: 'Football' },
-  Cricket: { emoji: '🏏', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', label: 'Cricket' },
-  Volleyball: { emoji: '🏐', color: '#ef4444', bg: 'rgba(239,68,68,0.12)', label: 'Volleyball' },
-  Kabaddi: { emoji: '🤼', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)', label: 'Kabaddi' },
+  Futsal: { emoji: '⚽', icon: 'sports_soccer', color: '#006c49', bg: 'rgba(0,108,73,0.08)', label: 'Futsal' },
+  Football: { emoji: '🏟️', icon: 'sports_soccer', color: '#006c49', bg: 'rgba(0,108,73,0.08)', label: 'Football' },
+  Cricket: { emoji: '🏏', icon: 'sports_cricket', color: '#855300', bg: 'rgba(133,83,0,0.08)', label: 'Cricket' },
+  Volleyball: { emoji: '🏐', icon: 'sports_volleyball', color: '#006a63', bg: 'rgba(0,106,99,0.08)', label: 'Volleyball' },
+  Kabaddi: { emoji: '🤼', icon: 'sports_martial_arts', color: '#855300', bg: 'rgba(133,83,0,0.08)', label: 'Kabaddi' },
+  Tennis: { emoji: '🎾', icon: 'sports_tennis', color: '#006a63', bg: 'rgba(0,106,99,0.08)', label: 'Tennis' },
+  Padel: { emoji: '🏓', icon: 'sports_tennis', color: '#006c49', bg: 'rgba(0,108,73,0.08)', label: 'Padel' },
 };
 
 /**
  * Get sport meta, with a sensible fallback
  */
 export function getSportMeta(sport) {
-  return SPORTS[sport] || { emoji: '🎯', color: '#6b7280', bg: 'rgba(107,114,128,0.12)', label: sport };
+  return SPORTS[sport] || { emoji: '🎯', icon: 'sports', color: '#6c7a71', bg: 'rgba(108,122,113,0.08)', label: sport };
 }

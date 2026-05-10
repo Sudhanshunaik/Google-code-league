@@ -1,8 +1,8 @@
 /**
- * Dashboard — Match Discovery
+ * Dashboard — Home Dashboard (Stitch Coastal Pulse Design)
  * 
- * Shows all upcoming matches grouped by sport.
- * Users can filter by sport and click to view/book each match.
+ * Shows welcome hero, upcoming matches as cards with venue images,
+ * sport filter chips, and quick actions.
  * Subscribes to Supabase Realtime for live booking counts.
  */
 import { useState, useEffect } from 'react';
@@ -11,12 +11,8 @@ import { supabase } from '../lib/supabase';
 import { getSportMeta } from '../utils/sportsMeta';
 import { getMatchWeather } from '../utils/weather';
 import { format } from 'date-fns';
-import {
-  MapPin, Clock, Users, ChevronRight, Filter,
-  Loader2, Zap, Search, CloudRain
-} from 'lucide-react';
 
-export default function Dashboard() {
+export default function Dashboard({ profile }) {
   const [matches, setMatches] = useState([]);
   const [bookingCounts, setBookingCounts] = useState({});
   const [matchWeather, setMatchWeather] = useState({});
@@ -100,44 +96,94 @@ export default function Dashboard() {
     ? matches
     : matches.filter((m) => m.sport === sportFilter);
 
+  const displayName = profile?.display_name || 'Player';
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 size={32} className="animate-spin text-goa-ocean" />
+        <div className="text-center">
+          <span className="material-symbols-outlined text-4xl text-primary animate-pulse">sports_soccer</span>
+          <p className="text-on-surface-variant text-sm mt-2">Loading matches…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      {/* Hero Section */}
-      <div className="text-center mb-8">
-        <h1 className="font-display text-3xl sm:text-4xl font-bold mb-2">
-          <span className="gradient-text">Find Your Game</span> 🏖️
-        </h1>
-        <p className="text-text-secondary text-sm sm:text-base max-w-lg mx-auto">
-          Book a spot at the best turfs and grounds across Goa.
-          Real-time updates, balanced teams, pure competition.
+    <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-6">
+      {/* Welcome Hero */}
+      <div className="mb-8">
+        <h2 className="font-display text-2xl md:text-[32px] font-semibold text-on-surface leading-tight mb-1">
+          Welcome back, <span className="text-primary">{displayName}</span>
+        </h2>
+        <p className="text-on-surface-variant text-base md:text-lg">
+          Ready to hit the court?
         </p>
       </div>
 
-      {/* Sport Filters */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-        <Filter size={16} className="text-text-muted flex-shrink-0" />
+      {/* Quick Stats (Stitch-style horizontal cards) */}
+      {profile && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {/* ELO Rating */}
+          <div className="stitch-card p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-primary text-[20px]">military_tech</span>
+              <span className="text-xs font-semibold text-on-surface-variant tracking-wider uppercase">ELO</span>
+            </div>
+            <p className="font-display text-2xl font-bold text-on-surface">{profile.skill_rating || 1200}</p>
+          </div>
+
+          {/* Wallet */}
+          <div className="stitch-card p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-tertiary text-[20px]">account_balance_wallet</span>
+              <span className="text-xs font-semibold text-on-surface-variant tracking-wider uppercase">Wallet</span>
+            </div>
+            <p className="font-display text-2xl font-bold text-on-surface">₹{profile.wallet_balance || 0}</p>
+          </div>
+
+          {/* Matches Count */}
+          <div className="stitch-card p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-secondary text-[20px]">scoreboard</span>
+              <span className="text-xs font-semibold text-on-surface-variant tracking-wider uppercase">Matches</span>
+            </div>
+            <p className="font-display text-2xl font-bold text-on-surface">{matches.length}</p>
+          </div>
+
+          {/* Status */}
+          <div className="stitch-card p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-primary-container text-[20px]">verified</span>
+              <span className="text-xs font-semibold text-on-surface-variant tracking-wider uppercase">Tier</span>
+            </div>
+            <p className="font-display text-lg font-bold text-primary">{profile.tier || 'Pro'}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Section Title */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display text-xl font-semibold text-on-surface">Upcoming Matches</h3>
+        <Link to="/map" className="text-primary text-sm font-semibold no-underline flex items-center gap-1 hover:underline">
+          View Map
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </Link>
+      </div>
+
+      {/* Sport Filter Chips */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
         {sports.map((sport) => {
           const meta = sport !== 'All' ? getSportMeta(sport) : null;
+          const isActive = sportFilter === sport;
           return (
             <button
               key={sport}
               onClick={() => setSportFilter(sport)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border cursor-pointer ${
-                sportFilter === sport
-                  ? 'bg-goa-ocean/15 text-goa-ocean border-goa-ocean/30'
-                  : 'bg-surface-card text-text-secondary border-border hover:border-goa-ocean/30'
-              }`}
+              className={`sport-chip ${isActive ? 'sport-chip--active' : 'sport-chip--inactive'}`}
             >
-              {meta && <span>{meta.emoji}</span>}
-              {sport}
+              {meta && <span className="material-symbols-outlined text-[16px]">{meta.icon}</span>}
+              {sport === 'All' ? 'All Sports' : sport}
             </button>
           );
         })}
@@ -145,9 +191,9 @@ export default function Dashboard() {
 
       {/* Matches Grid */}
       {filtered.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center">
-          <Search size={40} className="mx-auto text-text-muted mb-3" />
-          <p className="text-text-secondary">No matches found. Check back soon!</p>
+        <div className="stitch-card p-12 text-center">
+          <span className="material-symbols-outlined text-4xl text-on-surface-variant mb-3 block">search_off</span>
+          <p className="text-on-surface-variant">No matches found. Check back soon!</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -156,85 +202,86 @@ export default function Dashboard() {
             const count = bookingCounts[match.id] || { confirmed: 0, waitlisted: 0 };
             const spotsLeft = match.capacity - count.confirmed;
             const isFull = spotsLeft <= 0;
+            const fillPct = Math.min((count.confirmed / match.capacity) * 100, 100);
 
             return (
               <Link
                 to={`/match/${match.id}`}
                 key={match.id}
-                className="glass rounded-2xl p-5 card-hover no-underline block"
+                className="stitch-card card-hover no-underline block"
               >
-                {/* Sport badge */}
-                <div className="flex items-center justify-between mb-3">
-                  <div
-                    className="flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold"
-                    style={{ background: meta.bg, color: meta.color }}
-                  >
-                    <span>{meta.emoji}</span>
-                    {match.sport} · {match.format}
+                {/* Card Header */}
+                <div className="p-5">
+                  {/* Sport badge + status */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div
+                      className="sport-chip sport-chip--active"
+                      style={{ background: meta.bg, color: meta.color }}
+                    >
+                      <span className="material-symbols-outlined text-[14px]">{meta.icon}</span>
+                      {match.sport} · {match.format}
+                    </div>
+                    <div className="flex gap-2">
+                      {matchWeather[match.id]?.isHighRainRisk && (
+                        <span className="sport-chip sport-chip--inactive text-[#0ea5e9]" title={`${matchWeather[match.id].rainProbability}% rain`}>
+                          <span className="material-symbols-outlined text-[14px]">rainy</span>
+                          Rain
+                        </span>
+                      )}
+                      {match.status === 'live' && (
+                        <span className="live-badge sport-chip" style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
+                          <span className="material-symbols-outlined text-[14px]">bolt</span>
+                          LIVE
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    {matchWeather[match.id]?.isHighRainRisk && (
-                      <span className="live-badge flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold" title={`${matchWeather[match.id].rainProbability}% chance of rain`}>
-                        <CloudRain size={10} /> Rain Watch
-                      </span>
-                    )}
-                    {match.status === 'live' && (
-                      <span className="live-badge flex items-center gap-1 px-2 py-0.5 rounded-full bg-goa-palm/20 text-goa-palm text-xs font-bold">
-                        <Zap size={10} /> LIVE
-                      </span>
-                    )}
-                  </div>
-                </div>
 
-                {/* Location */}
-                <h3 className="font-display text-lg font-semibold text-text-primary mb-2 leading-tight">
-                  {match.location}
-                </h3>
-
-                {/* Details */}
-                <div className="flex flex-col gap-1.5 text-sm text-text-secondary mb-4">
-                  <div className="flex items-center gap-2">
-                    <Clock size={14} className="text-text-muted" />
-                    {format(new Date(match.match_time), 'EEE, MMM d · h:mm a')}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-text-muted" />
+                  {/* Location */}
+                  <h3 className="font-display text-lg font-semibold text-on-surface mb-2 leading-tight">
                     {match.location}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users size={14} className="text-text-muted" />
-                    {count.confirmed}/{match.capacity} players
-                    {count.waitlisted > 0 && (
-                      <span className="text-goa-sun text-xs">
-                        +{count.waitlisted} waitlisted
-                      </span>
-                    )}
-                  </div>
-                </div>
+                  </h3>
 
-                {/* Capacity bar */}
-                <div className="w-full h-1.5 rounded-full bg-surface overflow-hidden mb-3">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min((count.confirmed / match.capacity) * 100, 100)}%`,
-                      background: isFull
-                        ? 'linear-gradient(90deg, #f43f5e, #ef4444)'
-                        : 'linear-gradient(90deg, #06b6d4, #10b981)',
-                    }}
-                  />
-                </div>
+                  {/* Details */}
+                  <div className="flex flex-col gap-1.5 text-sm text-on-surface-variant mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px] text-outline">schedule</span>
+                      {format(new Date(match.match_time), 'EEE, MMM d · h:mm a')}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px] text-outline">location_on</span>
+                      {match.location}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px] text-outline">group</span>
+                      {count.confirmed}/{match.capacity} players
+                      {count.waitlisted > 0 && (
+                        <span className="text-tertiary text-xs font-semibold">
+                          +{count.waitlisted} waitlisted
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                {/* CTA */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`text-xs font-semibold ${
-                      isFull ? 'text-goa-coral' : 'text-goa-palm'
-                    }`}
-                  >
-                    {isFull ? 'Match Full — Join Waitlist' : `${spotsLeft} spots left`}
-                  </span>
-                  <ChevronRight size={16} className="text-text-muted" />
+                  {/* Capacity bar */}
+                  <div className="capacity-bar mb-3">
+                    <div
+                      className={`capacity-bar__fill ${isFull ? 'capacity-bar__fill--full' : 'capacity-bar__fill--ok'}`}
+                      style={{ width: `${fillPct}%` }}
+                    />
+                  </div>
+
+                  {/* CTA */}
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-xs font-semibold ${
+                        isFull ? 'text-error' : 'text-primary'
+                      }`}
+                    >
+                      {isFull ? 'Match Full — Join Waitlist' : `${spotsLeft} spots left`}
+                    </span>
+                    <span className="material-symbols-outlined text-outline text-[18px]">chevron_right</span>
+                  </div>
                 </div>
               </Link>
             );

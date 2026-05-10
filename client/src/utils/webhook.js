@@ -40,7 +40,7 @@ export async function triggerRainAlertWebhook(matchDetails, userDetails, rainPro
 }
 
 // Placeholder n8n webhook URL for cancellations
-const N8N_CANCELLATION_WEBHOOK_URL = 'https://sudhanshu777.app.n8n.cloud/webhook/cancellation';
+const N8N_CANCELLATION_WEBHOOK_URL = import.meta.env.VITE_N8N_CANCELLATION_WEBHOOK || 'https://sudhanshu777.app.n8n.cloud/webhook/cancellation';
 
 export async function triggerCancellationWebhook(matchDetails, userDetails, penaltyAmount, refundAmount) {
   try {
